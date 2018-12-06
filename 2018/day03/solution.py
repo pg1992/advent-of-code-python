@@ -47,11 +47,21 @@ def generate_tiles(rectangles: list) -> np.array:
     return tiles
 
 
+def id_of_whole_tile(rectangles, tiles):
+    for rect in rectangles:
+        area = np.prod(rect['size'])
+        true_area = np.sum(tiles.flat == rect['id'])
+        if area == true_area:
+            return rect['id']
+    return -1
+
+
 def main():
     rectangles = parse_rectangles(get_input())
     tiles = generate_tiles(rectangles)
 
-    print('Total of overlaps:', sum(tiles.flat < 0))
+    print('Total of overlaps:', np.sum(tiles.flat < 0))
+    print('ID of the whole tile:', id_of_whole_tile(rectangles, tiles))
 
 
 if __name__ == '__main__':
