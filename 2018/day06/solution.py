@@ -19,15 +19,20 @@ def closest(point):
     for ss in s:
         sc.append((ss, manhattan(ss, point)))
     sc = sorted(sc, key=lambda k: k[1])
+    sa = sum(map(lambda k: k[1], sc))
     if sc[0][1] == sc[1][1]:
-        return '.', '.'
-    return sc[0][0]
+        return ('.', '.'), sa
+    return sc[0][0], sa
 
 
 areas = {}
+in_range = 0
 for x in range(min_x, max_x + 1):
     for y in range(min_y, max_y + 1):
-        c = closest((x, y))
+        c, sa = closest((x, y))
+        if sa < 10000:
+            in_range += 1
         areas[c] = areas.get(c, 0) + 1
 
 print(max(list(areas.values())))
+print(in_range)
