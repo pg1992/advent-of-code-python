@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import datetime
-import numpy as np
 
 
 def get_input(filename: str = None) -> list:
@@ -33,81 +32,51 @@ def parse_and_sort(shifts: list) -> list:
     return parsed
 
 
-def get_guards_shifts(shifts: list) -> dict:
-    guard_shifts = {}
+def get_guards_shifts(shifts: list) -> tuple:
+    guard_minute = {}
+    guard_total = {}
 
-    guard_id = None
+    start = 0
+    guard = None
     for shift in shifts:
-        splt = shift['info'].split()
-
-        if splt[0] == 'Guard':
-            guard_id = int(splt[1][1:])
-            continue
-
-        if guard_id in guard_shifts:
-            guard_shifts[guard_id].append(shift['time'])
+        if 'Guard' in shift['info']:
+            guard = int(shift['info'].split()[1][1:])
+        elif 'falls' in shift['info']:
+            start = shift['time'].minute
         else:
-            guard_shifts[guard_id] = [shift['time']]
+            for t in range(start, shift['time'].minute):
+                guard_minute[(guard, t)] = guard_minute.get((guard, t), 0) + 1
+                guard_total[guard] = guard_total.get(guard, 0) + 1
 
-    return guard_shifts
-
-
-def find_sleepiest_guard(guards: dict) -> int:
-    max_guard = None
-    max_time = datetime.timedelta(0)
-
-    for guard, shifts in guards.items():
-        accum = datetime.timedelta(0)
-        for i in range(1, len(shifts), 2):
-            accum += shifts[i] - shifts[i - 1]
-
-        if accum > max_time:
-            max_time = accum
-            max_guard = guard
-
-    return max_guard
+    return guard_minute, guard_total
 
 
-def find_minute(sleep_times: list) -> int:
-    d = {}
-    for tt in sleep_times:
-        if tt.day in d:
-            d[tt.day].append(tt.minute)
-        else:
-            d[tt.day] = [tt.minute]
+def argmax(d):
+    max_key = 0
+    max_item = 0
+    for k, v in d.items():
+        if v > max_item:
+            max_key = k
+            max_item = v
 
-    groups = list(d.values())
-    all_pairs = []
-    for times in groups:
-        pairs = []
-        for i in range(1, len(times), 2):
-            pairs.append((times[i - 1], times[i]))
-        all_pairs.append(pairs)
-
-    time_table = np.zeros((len(all_pairs), 60), dtype=np.int16)
-    for i in range(len(all_pairs)):
-        for pair in all_pairs[i]:
-            mn, mx = pair
-            time_table[i, mn:mx] = 1
-
-    minute_score = np.sum(time_table, axis=0)
-
-    index = np.where(minute_score == np.max(minute_score))[0][0]
-
-    return index
+    return max_key
 
 
 def main():
     shifts = get_input()
     ordered_shifts = parse_and_sort(shifts)
-    guard_shifts = get_guards_shifts(ordered_shifts)
 
-    sleepy_guard = find_sleepiest_guard(guard_shifts)
-    sleep_times = guard_shifts[sleepy_guard]
+    gm, gt = get_guards_shifts(ordered_shifts)
 
-    minute = find_minute(sleep_times)
+    mid = argmax(gt)
+    mins = []
+    for t in range(60):
+        mins.append((t, gm.get((mid, t), 0)))
+    s = sorted(mins, key=lambda k: k[1], reverse=True)
+    print(s[0][0] * mid)
 
-    print('(Sleepiest guard ID) * (Minute asleep) =', minute * sleepy_guard)
+    gid, mmin = argmax(gm)
+    print(gid * mmin)
 
 
 if __name__ == '__main__':
