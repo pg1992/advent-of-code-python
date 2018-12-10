@@ -5,26 +5,26 @@ s = open('input').read().split('\n')[:-1]
 s = [k.split() for k in s]
 s = [(k[1], k[7]) for k in s]
 
-pars = {}
+deps = {}
 for c in string.ascii_uppercase:
-    pars[c] = []
+    deps[c] = []
 for p, c in s:
-    pars[c].append(p)
+    deps[c].append(p)
 
 done = []
 while True:
-    for c in sorted(pars.keys()):
-        if len(pars[c]) == 0:
+    for c in sorted(deps.keys()):
+        if len(deps[c]) == 0:
             done.append(c)
-            del pars[c]
+            del deps[c]
             break
 
-    if len(pars) == 0:
+    if len(deps) == 0:
         break
 
-    for c in pars:
+    for c in deps:
         for d in done:
-            if d in pars[c]:
-                pars[c].remove(d)
+            if d in deps[c]:
+                deps[c].remove(d)
 
 print(''.join(done))
