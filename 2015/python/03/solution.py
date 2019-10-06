@@ -10,9 +10,11 @@ import sys
 def find_houses(data):
     '''Find visited houses'''
     current_position = (0, 0)
-    visited = [current_position]
 
-    for direction in data:
+    real_visited = set()
+    real_visited.add(current_position)
+
+    for direction in data[::2]:
         if direction == '^':
             current_position = (current_position[0], current_position[1] + 1)
         elif direction == '>':
@@ -22,8 +24,27 @@ def find_houses(data):
         elif direction == '<':
             current_position = (current_position[0] - 1, current_position[1])
 
-        if current_position not in visited:
-            visited.append(current_position)
+        real_visited.add(current_position)
+
+    current_position = (0, 0)
+
+    robot_visited = set()
+    robot_visited.add(current_position)
+
+    for direction in data[1::2]:
+        if direction == '^':
+            current_position = (current_position[0], current_position[1] + 1)
+        elif direction == '>':
+            current_position = (current_position[0] + 1, current_position[1])
+        elif direction == 'v':
+            current_position = (current_position[0], current_position[1] - 1)
+        elif direction == '<':
+            current_position = (current_position[0] - 1, current_position[1])
+
+        robot_visited.add(current_position)
+
+
+    visited = real_visited.union(robot_visited)
 
     return len(visited)
 
