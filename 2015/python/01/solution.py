@@ -10,10 +10,12 @@ import sys
 def count_floors(data):
     """Count the total number of floors"""
     total = 0
-    for direction in data:
+    pos = -1
+    for i, direction in enumerate(data):
         total += 1 if direction == '(' else -1
-    return total
-
+        if total == -1 and pos == -1:
+            pos = i + 1
+    return total, pos
 
 
 def main():
@@ -22,7 +24,8 @@ def main():
     filename = 'input' if len(sys.argv) == 1 else str(sys.argv[1])
     with open(filename) as file_pointer:
         data = file_pointer.read()
-    print(count_floors(data))
+    total, basement_position = count_floors(data)
+    print(total, basement_position)
 
 
 if __name__ == '__main__':
