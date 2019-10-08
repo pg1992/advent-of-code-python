@@ -21,6 +21,8 @@ def main():
     """Main routine"""
     result = hash_collision('bgvyzdsv')
     print(result)
+    result = hash_collision('bgvyzdsv', 6)
+    print(result)
 
 
 if __name__ == '__main__':
