@@ -10,6 +10,16 @@ def main():
     fuel = [m // 3 - 2 for m in masses]
     print(sum(fuel))
 
+    total_fuel = []
+    for f in fuel:
+        s = 0
+        r = f
+        while r > 0:
+            s += r
+            r = r // 3 - 2
+        total_fuel.append(s)
+    print(sum(total_fuel))
+
 
 if __name__ == '__main__':
     main()
