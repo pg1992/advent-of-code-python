@@ -3,9 +3,9 @@ import os
 cur_dir = os.path.dirname(__file__)
 
 
-def compute(prog):
-    prog[1] = 12
-    prog[2] = 2
+def compute(prog, noun=12, verb=2):
+    prog[1] = noun
+    prog[2] = verb
 
     i = 0
     while True:
@@ -23,10 +23,21 @@ def compute(prog):
     return prog[0]
 
 
+def find_noun_verb(prog, target=19690720):
+    for n in range(100):
+        for v in range(100):
+            if compute(prog[:], n, v) == target:
+                return n, v
+    return -1, -1
+
+
+
 def main():
     with open(os.path.join(cur_dir, 'input')) as fd:
         intcode = [int(i) for i in fd.read().split(',')]
-    print(compute(intcode))
+    print(compute(intcode[:]))
+    n, v = find_noun_verb(intcode[:])
+    print(f'{n:02}{v:02}')
 
 
 if __name__ == '__main__':
