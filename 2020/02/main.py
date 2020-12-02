@@ -5,21 +5,39 @@ def naive_policy(policy, password):
     letter_range, letter = policy.split(' ')
     min_letter, max_letter = letter_range.split('-')
 
+    min_letter = int(min_letter)
+    max_letter = int(max_letter)
+
     before = len(password)
     after = len(password.replace(letter, ''))
 
-    return int(min_letter) <= before - after <= int(max_letter)
+    return min_letter <= before - after <= max_letter
+
+
+def real_policy(policy, password):
+    letter_range, letter = policy.split(' ')
+    min_letter, max_letter = letter_range.split('-')
+
+    min_letter = int(min_letter)
+    max_letter = int(max_letter)
+
+    first = password[min_letter - 1] == letter
+    second = password[max_letter - 1] == letter
+
+    return first + second == 1
 
 
 def total_of_valid_passwords(password_db):
-    count = 0
+    count_naive = 0
+    count_real = 0
 
     for entry in password_db.split('\n'):
         policy, password = entry.split(': ')
 
-        count += naive_policy(policy, password)
+        count_naive += naive_policy(policy, password)
+        count_real += real_policy(policy, password)
 
-    return count
+    return count_naive, count_real
 
 
 def get_password_db(url, session):
