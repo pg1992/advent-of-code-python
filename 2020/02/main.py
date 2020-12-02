@@ -1,18 +1,23 @@
 import requests
 
 
+def naive_policy(policy, password):
+    letter_range, letter = policy.split(' ')
+    min_letter, max_letter = letter_range.split('-')
+
+    before = len(password)
+    after = len(password.replace(letter, ''))
+
+    return int(min_letter) <= before - after <= int(max_letter)
+
+
 def total_of_valid_passwords(password_db):
     count = 0
+
     for entry in password_db.split('\n'):
         policy, password = entry.split(': ')
-        letter_range, letter = policy.split(' ')
-        min_letter, max_letter = letter_range.split('-')
 
-        before = len(password)
-        after = len(password.replace(letter, ''))
-
-        if int(min_letter) <= before - after <= int(max_letter):
-            count += 1
+        count += naive_policy(policy, password)
 
     return count
 
